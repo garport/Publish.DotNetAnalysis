@@ -6,8 +6,7 @@ branding:
 runs:
   using: "composite"
   steps:
-    - name: Set GitHub Path
-    
+    - name: Set GitHub Path    
       run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
       shell: bash
       env:
@@ -15,4 +14,6 @@ runs:
 
     - name: Run PowerShell Script
       shell: PowerShell
-      run: pwsh -File verify-code-analysis.ps1
+      run: |
+        Get-ChildItem -Recursive
+        ./verify-code-analysis.ps1

@@ -1,0 +1,17 @@
+name: CI Test for Code Analysis Action
+
+on:
+  pull_request:
+
+jobs:
+  run-action-tests:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+  
+
+    - name: Run the Action
+      uses: ./action.yml
