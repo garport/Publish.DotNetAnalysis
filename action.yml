@@ -16,4 +16,4 @@ runs:
       shell: powershell
       run: |
         Get-ChildItem ${{ github.action_path }} -Recurse 
-        ./${{ github.action_path }}/verify-code-analysis.ps1
+        ./verify-code-analysis.ps1
