@@ -1,30 +1,17 @@
 {
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
   "version": "2.1.0",
   "runs": [
     {
       "tool": {
         "driver": {
-          "name": "CodeAnalysisTool",
-          "version": "1.0.0",
-          "informationUri": "https://example.com",
-          "rules": [
-            {
-              "id": "CA2000",
-              "name": "Dispose objects before losing scope",
-              "fullDescription": {
-                "text": "All IDisposable objects should be disposed of before they go out of scope."
-              },
-              "defaultConfiguration": {
-                "level": "warning"
-              }
-            }
-          ]
+          "name": "Dummy Code Analysis"
         }
       },
       "results": [
         {
           "ruleId": "CA2000",
-          "level": "warning",
+          "ruleIndex": 0,
           "message": {
             "text": "Dispose objects before losing scope."
           },
@@ -32,18 +19,17 @@
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "Program.cs",
-                  "uriBaseId": "%SRCROOT%"
+                  "uri": "test-resources/Program.cs"
                 },
                 "region": {
-                  "startLine": 10,
-                  "startColumn": 13,
-                  "endLine": 10,
-                  "endColumn": 28
+                  "startLine": 10
                 }
               }
             }
-          ]
+          ],
+          "partialFingerprints": {
+            "message": "Dispose objects before losing scope."
+          }
         }
       ]
     }

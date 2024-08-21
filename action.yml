@@ -25,10 +25,15 @@ runs:
           const fs = require('fs');
           const body = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/request-body.md`, 'utf8');
           const issue_number = context.payload.pull_request.number;
-    
+
           await github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
             issue_number: issue_number,
             body: body // Use Markdown content directly
           });
+
+    - name: Upload SARIF files
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: ${{ github.workspace }}/combined-code-analysis.sarif
