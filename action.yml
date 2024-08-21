@@ -10,12 +10,6 @@ runs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Set GitHub Path
-      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
-      shell: bash
-      env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
-
     - name: Run PowerShell Script
       shell: pwsh
       run: |
@@ -23,7 +17,7 @@ runs:
         Write-Host "Current directory: $(pwd)"
         
         # Run the PowerShell script
-        $path =  Join-Path $GITHUB_ACTION_PATH "scripts/verify-code-analysis.ps1"
+        $path =  Join-Path ${{GITHUB.ACTION_PATH}} "scripts/verify-code-analysis.ps1"
 
         & $path
     - name: Post Comment on PR using GitHub Script
