@@ -9,7 +9,9 @@
       "results": [
         {
           "ruleId": "CA1001",
-          "message": "Type 'MyDisposableClass' implements IDisposable but does not dispose of resources.",
+          "message": {
+            "text": "Type 'MyDisposableClass' implements IDisposable but does not dispose of resources."
+          },
           "locations": [
             {
               "physicalLocation": {
@@ -18,9 +20,7 @@
                 },
                 "region": {
                   "startLine": 15,
-                  "startColumn": 5,
-                  "endLine": 15,
-                  "endColumn": 40
+                  "startColumn": 5
                 }
               }
             }

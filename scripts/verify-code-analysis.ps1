@@ -14,56 +14,40 @@ if (-not $baseDir) {
 $sarifFiles = Get-ChildItem -Path $baseDir -Recurse -Filter *.sarif
 
 if ($sarifFiles.Count -eq 0) {
-    Write-Error "No SARIF files found in $baseDir. Please ensure you have run 'dotnet build' with the following properties added to your .csproj files:
-    <PropertyGroup>
-        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-        <ErrorLog>code-analysis.sarif</ErrorLog>
-    </PropertyGroup>"
+    Write-Error "No SARIF files found in $baseDir. Please ensure you have run 'dotnet build' with the appropriate properties added to your .csproj files."
     exit 1
 }
 
 # Combine all SARIF files into one
 $combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
 $combinedSarifContent = @()
-
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
-
-    # Check for SARIF version 1.0.0
-    if ($content.version -eq "1.0.0") {
-        foreach ($run in $content.runs) {
-            $combinedSarifContent += $run
-        }
-    } else {
-        # Assuming SARIF 2.0.0 or other structure
-        $combinedSarifContent += $content
-    }
+    $combinedSarifContent += $content.runs[0].results
 }
 
-# Convert the combined SARIF content back to the correct structure
-$combinedSarifJson = @{
+$combinedSarifJson = [pscustomobject]@{
     version = "1.0.0"
-    runs = $combinedSarifContent
+    runs = @([pscustomobject]@{
+        tool = [pscustomobject]@{
+            name = "CombinedTool"
+            version = "1.0.0"
+        }
+        results = $combinedSarifContent
+    })
 } | ConvertTo-Json -Depth 100
-
 Set-Content -Path $combinedSarifFile -Value $combinedSarifJson
 
 # Generate a markdown report from the SARIF findings
 $findings = @()
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
-
-    foreach ($run in $content.runs) {
-        foreach ($result in $run.results) {
-            $ruleId = $result.ruleId
-
-            # SARIF 1.0.0 structure differences
-            $message = if ($result.message) { $result.message.text } else { $result.message }
-            $fileUri = $result.locations.physicalLocation.artifactLocation.uri
-            $startLine = $result.locations.physicalLocation.region.startLine
-
-            $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
-        }
+    foreach ($result in $content.runs[0].results) {
+        $ruleId = $result.ruleId
+        $message = $result.message.text
+        $fileUri = $result.locations[0].physicalLocation.artifactLocation.uri
+        $startLine = $result.locations[0].physicalLocation.region.startLine
+        $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
     }
 }
 

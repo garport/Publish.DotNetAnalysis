@@ -9,7 +9,9 @@
       "results": [
         {
           "ruleId": "CA2000",
-          "message": "Dispose objects before losing scope.",
+          "message": {
+            "text": "Dispose objects before losing scope."
+          },
           "locations": [
             {
               "physicalLocation": {
@@ -18,9 +20,7 @@
                 },
                 "region": {
                   "startLine": 25,
-                  "startColumn": 10,
-                  "endLine": 25,
-                  "endColumn": 45
+                  "startColumn": 10
                 }
               }
             }
