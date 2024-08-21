@@ -5,22 +5,25 @@ on:
 
 jobs:
   run-action-tests:
+    permissions:
+      contents: read
+      pull-requests: write
     runs-on: windows-latest
 
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
   
-    - name: Run PowerShell Script
-      shell: powershell
-      run: |
-        Get-ChildItem -Recurse
+    # - name: Run PowerShell Script
+    #   shell: powershell
+    #   run: |
+    #     Get-ChildItem -Recurse
 
     - name: Run the Action (with SARIF files)
       run: |
         mkdir -Force .\test-results
         Copy-Item -Path .\test-resources\dummy-analysis.sarif -Destination .\test-results\
-    - name: Run the Action
+    - name: Run the Action       
       uses: ./
       
     - name: Run the Action (without SARIF files)
