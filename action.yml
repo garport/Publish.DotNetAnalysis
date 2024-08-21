@@ -10,18 +10,20 @@ inputs:
   use-codeql:
     description: "Whether or not to upload the Sarif files with Code QL"
     required: true
+    default: 'false'  # Set a default value
+
 runs:
   using: "composite"
   steps:
     - name: Run PowerShell Script
       shell: pwsh
       env:
-        SARIF_BASE_DIR: ${{inputs.search-directory}}
+        SARIF_BASE_DIR: ${{ inputs.search-directory }}
       run: |
         # Run the PowerShell script
-        $path =  Join-Path ${{GITHUB.ACTION_PATH}} "scripts/verify-code-analysis.ps1"
-
+        $path =  Join-Path ${{ GITHUB.ACTION_PATH }} "scripts/verify-code-analysis.ps1"
         & $path
+
     - name: Post Comment on PR using GitHub Script
       uses: actions/github-script@v6
       with:
@@ -40,7 +42,7 @@ runs:
           });
 
     - name: Upload SARIF files
+      if: ${{ inputs.use-codeql == 'true' }}
       uses: github/codeql-action/upload-sarif@v3
-      if: ${{ inputs.use-codeql }}
       with:
         sarif_file: ${{ github.workspace }}/combined-code-analysis.sarif
