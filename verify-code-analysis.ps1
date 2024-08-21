@@ -47,15 +47,4 @@ $report = @"
 $(($findings -join "`n"))
 "@
 
-# Post the report as a comment on the pull request
-$body = @{
-    body = $report
-}
-$body | ConvertTo-Json -Compress | Out-File -FilePath $env:GITHUB_WORKSPACE\request-body.json -Encoding utf8
-
-# $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/issues/$env:GITHUB_PULL_REQUEST/comments"
-# $headers = @{
-#     Authorization = "Bearer $env:GITHUB_TOKEN"
-#     Accept        = "application/vnd.github.v3+json"
-# }
-# $response = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body ($body | ConvertTo-Json)
+$report | ConvertTo-Json -Compress | Out-File -FilePath $env:GITHUB_WORKSPACE\request-body.json -Encoding utf8
