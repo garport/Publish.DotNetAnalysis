@@ -1,29 +1,33 @@
-name: 'Publish Code Analysis'
-description: 'Publish .NET Code Analysis as a PR Comment'
+name: "Publish Code Analysis"
+description: "Publish .NET Code Analysis as a PR Comment"
 branding:
   icon: git-pull-request
   color: purple
+
 runs:
   using: "composite"
   steps:
-    - name: Set GitHub Path    
-      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
-      shell: bash
-      env:
-        GITHUB_ACTION_PATH: ${{ github.action_path }}
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
     - name: Run PowerShell Script
-      shell: powershell
+      shell: pwsh
       run: |
-        # Get-ChildItem ${{ github.action_path }} -Recurse 
-        ./verify-code-analysis.ps1
+        # Print working directory for debugging
+        Write-Host "Current directory: $(pwd)"
 
+        # Run the PowerShell script
+        $path =  Join-Path ${{GITHUB.ACTION_PATH}} "scripts/verify-code-analysis.ps1"
+
+        & $path
     - name: Post Comment on PR using GitHub Script
       uses: actions/github-script@v6
       with:
         script: |
           const fs = require('fs');
-          const body = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/request-body.md`, 'utf8');
+          const path = require('path');
+          const requestBodyPath = path.join(process.env.GITHUB_WORKSPACE, 'request-body.md');
+          const body = fs.readFileSync(requestBodyPath, 'utf8');
           const issue_number = context.payload.pull_request.number;
 
           await github.rest.issues.createComment({
