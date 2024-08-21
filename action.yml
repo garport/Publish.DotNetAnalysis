@@ -4,11 +4,11 @@ branding:
   icon: git-pull-request
   color: purple
 inputs:
-  search-directory:  
-    description: 'Base directory to begin searching for SARIF files'
+  search-directory:
+    description: "Base directory to begin searching for SARIF files"
     required: true
-  use-codeql:  
-    description: 'Whether or not to upload the Sarif files with Code QL'
+  use-codeql:
+    description: "Whether or not to upload the Sarif files with Code QL"
     required: true
 runs:
   using: "composite"
@@ -44,6 +44,6 @@ runs:
 
     - name: Upload SARIF files
       uses: github/codeql-action/upload-sarif@v3
-      if: ${{inputs.use-codeql}} == 'true'
+      if: ${{ inputs.use-codeql }}
       with:
         sarif_file: ${{ github.workspace }}/combined-code-analysis.sarif
