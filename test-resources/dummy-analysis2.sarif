@@ -1,0 +1,51 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "CodeAnalysisTool",
+          "version": "1.0.0",
+          "informationUri": "https://example.com",
+          "rules": [
+            {
+              "id": "CA2001",
+              "shortDescription": {
+                "text": "Avoid using certain APIs"
+              },
+              "fullDescription": {
+                "text": "Using this API can lead to potential vulnerabilities."
+              },
+              "helpUri": "https://example.com/CA2001"
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CA2001",
+          "level": "warning",
+          "message": {
+            "text": "Avoid using this particular API."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Program.cs",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 9,
+                  "endLine": 15,
+                  "endColumn": 29
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
