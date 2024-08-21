@@ -22,26 +22,35 @@ if ($sarifFiles.Count -eq 0) {
     exit 1
 }
 
-# Combine all SARIF files into one
-$combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
-$combinedSarifContent = @()
+# Initialize an empty array for runs
+$combinedRuns = @()
+
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
-    $combinedSarifContent += $content
+    $combinedRuns += $content.runs
 }
 
+# Create the combined SARIF structure
+$combinedSarifContent = @{
+    version = "2.1.0"
+    runs    = $combinedRuns
+}
+
+# Convert to JSON
 $combinedSarifJson = $combinedSarifContent | ConvertTo-Json -Depth 100
+
+# Save the combined SARIF file
+$combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
 Set-Content -Path $combinedSarifFile -Value $combinedSarifJson
 
 # Generate a markdown report from the SARIF findings
 $findings = @()
-foreach ($sarifFile in $sarifFiles) {
-    $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
-    foreach ($result in $content.runs.results) {
-        $ruleId = $result.ruleId
-        $message = $result.message.text
-        $fileUri = $result.locations.physicalLocation.artifactLocation.uri
-        $startLine = $result.locations.physicalLocation.region.startLine
+foreach ($result in $combinedRuns) {
+    foreach ($run in $result.results) {
+        $ruleId = $run.ruleId
+        $message = $run.message.text
+        $fileUri = $run.locations.physicalLocation.artifactLocation.uri
+        $startLine = $run.locations.physicalLocation.region.startLine
         $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
     }
 }
