@@ -47,4 +47,4 @@ $report = @"
 $(($findings -join "`n"))
 "@
 
-$report | ConvertTo-Json -Compress | Out-File -FilePath $env:GITHUB_WORKSPACE\request-body.json -Encoding utf8
+$report | Out-File -FilePath $env:GITHUB_WORKSPACE\request-body.md -Encoding utf8

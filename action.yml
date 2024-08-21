@@ -23,12 +23,12 @@ runs:
       with:
         script: |
           const fs = require('fs');
-          const body = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/request-body.json`, 'utf8');
+          const body = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/request-body.md`, 'utf8');
           const issue_number = context.payload.pull_request.number;
-
-          github.rest.issues.createComment({
+    
+          await github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
             issue_number: issue_number,
-            body: body
+            body: body // Use Markdown content directly
           });
