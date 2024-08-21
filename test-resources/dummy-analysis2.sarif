@@ -9,15 +9,14 @@
       "results": [
         {
           "ruleId": "CA2000",
-          "message": {
-            "text": "Dispose objects before losing scope."
-          },
+          "message": 
+             "Dispose objects before losing scope."
+          ,
           "locations": [
             {
-              "physicalLocation": {
-                "artifactLocation": {
+              "resultfile": {
                   "uri": "Program.cs"
-                },
+                
                 "region": {
                   "startLine": 25,
                   "startColumn": 10

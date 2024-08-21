@@ -9,18 +9,17 @@
       "results": [
         {
           "ruleId": "CA1001",
-          "message": {
-            "text": "Type 'MyDisposableClass' implements IDisposable but does not dispose of resources."
-          },
+          "message": "Type 'MyDisposableClass' implements IDisposable but does not dispose of resources.",
           "locations": [
             {
-              "physicalLocation": {
-                "artifactLocation": {
+              "resultfile": {
                   "uri": "Program.cs"
-                },
+                
                 "region": {
                   "startLine": 15,
-                  "startColumn": 5
+                  "startColumn": 5,
+                  "endLine": 15,
+                  "endColumn": 40
                 }
               }
             }
