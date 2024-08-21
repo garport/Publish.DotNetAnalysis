@@ -1,0 +1,9 @@
+name: 'Publish Code Analysis'
+description: 'Publish .NET Code Analysis as a PR Comment'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run PowerShell Script
+      shell: PowerShell
+      run: pwsh -File verify-code-analysis.ps1
