@@ -19,7 +19,7 @@ jobs:
       uses: ./
       
     - name: Run the Action (without SARIF files)
-      run: Remove-Item -Force .\test-results\dummy-analysis.sarif
+      run: Remove-Item -Force .\test-resources\dummy-analysis.sarif
     - name: Run the Action
       uses: ./
       continue-on-error: true
