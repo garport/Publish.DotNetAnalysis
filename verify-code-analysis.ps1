@@ -49,11 +49,11 @@ foreach ($sarifFile in $sarifFiles) {
     foreach ($result in $content.runs.results) {
         $ruleId = $result.ruleId
         $message = $result.message.text
-        $fileUri = $result.locations.physicalLocation.artifactLocation.uri -replace "$env:GITHUB_WORKSPACE", ""
+        $fileName = [System.IO.Path]::GetFileName($result.locations.physicalLocation.artifactLocation.uri)
         $startLine = $result.locations.physicalLocation.region.startLine
 
-        # Format the output as text with relative path and line number
-        $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
+        # Format the output with file name and line number
+        $findings += "| $ruleId | $message | $fileName | Line: $startLine |"
     }
 }
 
