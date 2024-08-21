@@ -23,7 +23,7 @@ runs:
         Write-Host "Current directory: $(pwd)"
         
         # Run the PowerShell script
-        & "$GITHUB_ACTION_PATH/verify-code-analysis.ps1"
+        & "$GITHUB_ACTION_PATH/scripts/verify-code-analysis.ps1"
 
     - name: Post Comment on PR using GitHub Script
       uses: actions/github-script@v6
