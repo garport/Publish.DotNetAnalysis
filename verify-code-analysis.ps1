@@ -50,10 +50,12 @@ foreach ($sarifFile in $sarifFiles) {
     foreach ($result in $content.runs.results) {
         $ruleId = $result.ruleId
         $message = $result.message.text
-        $fileUri = $result.locations.physicalLocation.artifactLocation.uri -replace "$env:GITHUB_WORKSPACE", ""
+        $fileUri = $result.locations.physicalLocation.artifactLocation.uri
         $startLine = $result.locations.physicalLocation.region.startLine
 
         # Format file URI to a GitHub URL
+        # Handle potential issues with file paths
+        $fileUri = $fileUri -replace [regex]::Escape($env:GITHUB_WORKSPACE + "\") , "" 
         $fileUrl = "$repoUrl/blob/${env:GITHUB_REF}/$fileUri"
         $link = "$fileUrl#L$startLine"
 
