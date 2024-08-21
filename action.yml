@@ -1,9 +1,13 @@
 name: 'Publish Code Analysis'
 description: 'Publish .NET Code Analysis as a PR Comment'
-
+branding:
+  icon: git-pull-request
+  color: purple
 runs:
   using: "composite"
   steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
     - name: Run PowerShell Script
       shell: PowerShell
       run: pwsh -File verify-code-analysis.ps1
