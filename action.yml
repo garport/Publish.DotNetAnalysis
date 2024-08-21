@@ -3,15 +3,17 @@ description: "Publish .NET Code Analysis as a PR Comment"
 branding:
   icon: git-pull-request
   color: purple
-
+inputs:
+  search-directory:  
+    description: 'Base directory to begin searching for SARIF files'
+    required: true
 runs:
   using: "composite"
   steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v3
-
     - name: Run PowerShell Script
       shell: pwsh
+      env:
+        SARIF_BASE_DIR: ${{inputs.search-directory}}
       run: |
         # Print working directory for debugging
         Write-Host "Current directory: $(pwd)"

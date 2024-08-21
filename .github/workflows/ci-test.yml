@@ -15,12 +15,16 @@ jobs:
       uses: actions/checkout@v3
   
 
-    - name: Run the Action (with SARIF files)   
+    - name: Run the Action (with SARIF files)
+      with:
+        search-directory: ${{github.workspace}}
       uses: ./
       
     - name: Run the Action (without SARIF files)
       run: Remove-Item -Force .\test-resources\dummy-analysis.sarif
     - name: Run the Action
+      with:
+        search-directory: ${{github.workspace}}
       uses: ./
       continue-on-error: true
 
