@@ -14,43 +14,39 @@ if (-not $baseDir) {
 $sarifFiles = Get-ChildItem -Path $baseDir -Recurse -Filter *.sarif
 
 if ($sarifFiles.Count -eq 0) {
-    Write-Error "No SARIF files found in $baseDir. Please ensure you have run 'dotnet build' with the following properties added to your .csproj files:
-    <PropertyGroup>
-        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-        <ErrorLog>code-analysis.sarif</ErrorLog>
-    </PropertyGroup>"
+    Write-Error "No SARIF files found in $baseDir. Please ensure you have run 'dotnet build' with the appropriate properties added to your .csproj files."
     exit 1
 }
 
-# Initialize an empty array for runs
-$combinedRuns = @()
-
+# Combine all SARIF files into one
+$combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
+$combinedSarifContent = @()
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
-    $combinedRuns += $content.runs
+    $combinedSarifContent += $content.runs[0].results
 }
 
-# Create the combined SARIF structure
-$combinedSarifContent = @{
-    version = "2.1.0"
-    runs    = $combinedRuns
-}
-
-# Convert to JSON
-$combinedSarifJson = $combinedSarifContent | ConvertTo-Json -Depth 100
-
-# Save the combined SARIF file
-$combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
+$combinedSarifJson = [pscustomobject]@{
+    version = "1.0.0"
+    runs = @([pscustomobject]@{
+        tool = [pscustomobject]@{
+            name = "CombinedTool"
+            version = "1.0.0"
+        }
+        results = $combinedSarifContent
+    })
+} | ConvertTo-Json -Depth 100
 Set-Content -Path $combinedSarifFile -Value $combinedSarifJson
 
 # Generate a markdown report from the SARIF findings
 $findings = @()
-foreach ($result in $combinedRuns) {
-    foreach ($run in $result.results) {
-        $ruleId = $run.ruleId
-        $message = $run.message.text
-        $fileUri = $run.locations.physicalLocation.artifactLocation.uri
-        $startLine = $run.locations.physicalLocation.region.startLine
+foreach ($sarifFile in $sarifFiles) {
+    $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
+    foreach ($result in $content.runs[0].results) {
+        $ruleId = $result.ruleId
+        $message = $result.message.text
+        $fileUri = $result.locations[0].physicalLocation.artifactLocation.uri
+        $startLine = $result.locations[0].physicalLocation.region.startLine
         $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
     }
 }

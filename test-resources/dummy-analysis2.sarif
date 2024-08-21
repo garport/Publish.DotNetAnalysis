@@ -1,45 +1,26 @@
 {
-  "version": "2.1.0",
+  "version": "1.0.0",
   "runs": [
     {
       "tool": {
-        "driver": {
-          "name": "CodeAnalysisTool",
-          "version": "1.0.0",
-          "informationUri": "https://example.com",
-          "rules": [
-            {
-              "id": "CA2001",
-              "shortDescription": {
-                "text": "Avoid using certain APIs"
-              },
-              "fullDescription": {
-                "text": "Using this API can lead to potential vulnerabilities."
-              },
-              "helpUri": "https://example.com/CA2001"
-            }
-          ]
-        }
+        "name": "DummyAnalyzer",
+        "version": "1.0.0"
       },
       "results": [
         {
-          "ruleId": "CA2001",
-          "level": "warning",
+          "ruleId": "CA2000",
           "message": {
-            "text": "Avoid using this particular API."
+            "text": "Dispose objects before losing scope."
           },
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "Program.cs",
-                  "uriBaseId": "%SRCROOT%"
+                  "uri": "Program.cs"
                 },
                 "region": {
-                  "startLine": 15,
-                  "startColumn": 9,
-                  "endLine": 15,
-                  "endColumn": 29
+                  "startLine": 25,
+                  "startColumn": 10
                 }
               }
             }
