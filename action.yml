@@ -18,9 +18,6 @@ runs:
       env:
         SARIF_BASE_DIR: ${{inputs.search-directory}}
       run: |
-        # Print working directory for debugging
-        Write-Host "Current directory: $(pwd)"
-
         # Run the PowerShell script
         $path =  Join-Path ${{GITHUB.ACTION_PATH}} "scripts/verify-code-analysis.ps1"
 

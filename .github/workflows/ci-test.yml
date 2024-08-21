@@ -23,8 +23,7 @@ jobs:
       
     - name: Run the Action (without SARIF files)
       run: | 
-        Remove-Item -Force .\test-resources\dummy-analysis.sarif
-        Remove-Item -Force .\test-resources\dummy-analysis2.sarif
+        Remove-Item -Force *.sarif
     - name: Run the Action
       with:
         search-directory: ${{github.workspace}}
