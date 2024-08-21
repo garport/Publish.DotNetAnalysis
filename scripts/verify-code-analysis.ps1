@@ -44,9 +44,9 @@ foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
     foreach ($result in $content.runs[0].results) {
         $ruleId = $result.ruleId
-        $message = $result.message.text
-        $fileUri = $result.locations[0].physicalLocation.artifactLocation.uri
-        $startLine = $result.locations[0].physicalLocation.region.startLine
+        $message = $result.message
+        $fileUri = $result.locations[0].resultfile.uri
+        $startLine = $result.locations[0].resultfile.region.startLine
         $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
     }
 }
