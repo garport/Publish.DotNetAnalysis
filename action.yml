@@ -7,10 +7,10 @@ inputs:
   search-directory:
     description: "Base directory to begin searching for SARIF files"
     required: true
-  use-codeql:
-    description: "Whether or not to upload the Sarif files with Code QL"
-    required: true
-    default: 'false'  # Set a default value
+  # use-codeql:
+  #   description: "Whether or not to upload the Sarif files with Code QL"
+  #   required: true
+  #   default: 'false'  # Set a default value
 
 runs:
   using: "composite"
@@ -41,8 +41,8 @@ runs:
             body: body // Use Markdown content directly
           });
 
-    - name: Upload SARIF files
-      if: ${{ inputs.use-codeql == 'true' }}
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: ${{ github.workspace }}/combined-code-analysis.sarif
+    # - name: Upload SARIF files
+    #   if: ${{ inputs.use-codeql == 'true' }}
+    #   uses: github/codeql-action/upload-sarif@v3
+    #   with:
+    #     sarif_file: ${{ github.workspace }}/combined-code-analysis.sarif
