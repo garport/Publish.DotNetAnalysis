@@ -1,5 +1,5 @@
 # Verify that the script is running as part of a pull request
-if (-not $env:GITHUB_EVENT_NAME -eq 'pull_request') {
+if ($env:GITHUB_EVENT_NAME -ne 'pull_request') {
     Write-Error "This GitHub Action can only be run as part of a pull request."
     exit 1
 }
@@ -19,12 +19,27 @@ if ($sarifFiles.Count -eq 0) {
 # Combine all SARIF files into one
 $combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
 $combinedSarifContent = @()
+
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
-    $combinedSarifContent += $content
+    $combinedSarifContent += $content.runs.results
 }
 
-$combinedSarifJson = $combinedSarifContent | ConvertTo-Json -Depth 100
+# Create a valid SARIF structure
+$combinedSarifJson = @{
+    version = "2.1.0"
+    runs = @(
+        @{
+            tool = @{
+                driver = @{
+                    name = "Combined SARIF Analysis"
+                }
+            }
+            results = $combinedSarifContent
+        }
+    )
+} | ConvertTo-Json -Depth 100
+
 Set-Content -Path $combinedSarifFile -Value $combinedSarifJson
 
 # Generate a markdown report from the SARIF findings
@@ -34,9 +49,11 @@ foreach ($sarifFile in $sarifFiles) {
     foreach ($result in $content.runs.results) {
         $ruleId = $result.ruleId
         $message = $result.message.text
-        $fileUri = $result.locations.physicalLocation.artifactLocation.uri
+        $fileName = [System.IO.Path]::GetFileName($result.locations.physicalLocation.artifactLocation.uri)
         $startLine = $result.locations.physicalLocation.region.startLine
-        $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
+
+        # Format the output with file name and line number
+        $findings += "| $ruleId | $message | $fileName | Line: $startLine |"
     }
 }
 
@@ -47,13 +64,4 @@ $report = @"
 $(($findings -join "`n"))
 "@
 
-# Post the report as a comment on the pull request
-$body = @{
-    body = $report
-}
-$uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/issues/$env:GITHUB_PULL_REQUEST/comments"
-$headers = @{
-    Authorization = "Bearer $env:GITHUB_TOKEN"
-    Accept        = "application/vnd.github.v3+json"
-}
-$response = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body ($body | ConvertTo-Json)
+$report | Out-File -FilePath $env:GITHUB_WORKSPACE\request-body.md -Encoding utf8

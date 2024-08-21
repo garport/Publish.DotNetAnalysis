@@ -6,13 +6,34 @@ branding:
 runs:
   using: "composite"
   steps:
-    - name: Set GitHub Path
-    
+    - name: Set GitHub Path    
       run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
       shell: bash
       env:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
 
     - name: Run PowerShell Script
-      shell: PowerShell
-      run: pwsh -File verify-code-analysis.ps1
+      shell: powershell
+      run: |
+        # Get-ChildItem ${{ github.action_path }} -Recurse 
+        ./verify-code-analysis.ps1
+
+    - name: Post Comment on PR using GitHub Script
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const body = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/request-body.md`, 'utf8');
+          const issue_number = context.payload.pull_request.number;
+
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issue_number,
+            body: body // Use Markdown content directly
+          });
+
+    - name: Upload SARIF files
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: ${{ github.workspace }}/combined-code-analysis.sarif

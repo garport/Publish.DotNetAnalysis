@@ -1,0 +1,33 @@
+name: CI Test for Code Analysis Action
+
+on:
+  pull_request:
+
+jobs:
+  run-action-tests:
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+  
+
+    - name: Run the Action (with SARIF files)   
+      uses: ./
+      
+    - name: Run the Action (without SARIF files)
+      run: Remove-Item -Force .\test-resources\dummy-analysis.sarif
+    - name: Run the Action
+      uses: ./
+      continue-on-error: true
+
+    - name: Check for Expected Error
+      run: |
+        if ($LASTEXITCODE -eq 0) {
+          Write-Error "The action should have failed due to missing SARIF files."
+        } else {
+          Write-Host "Expected error due to missing SARIF files."
+        }

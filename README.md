@@ -7,3 +7,10 @@ Ensure `dotnet build` has been run before calling this action using these two pr
   <ErrorLog>code-analysis.sarif</ErrorLog>
 </PropertyGroup>
 ```
+
+The calling job will also need these permissions:
+```yml
+permissions:
+  contents: read
+  pull-requests: write
+```
