@@ -16,5 +16,23 @@ jobs:
       run: |
         Get-ChildItem -Recurse
 
+    - name: Run the Action (with SARIF files)
+      run: |
+        mkdir -Force .\test-results
+        Copy-Item -Path .\test-resources\dummy-analysis.sarif -Destination .\test-results\
     - name: Run the Action
       uses: ./
+      
+    - name: Run the Action (without SARIF files)
+      run: Remove-Item -Force .\test-results\dummy-analysis.sarif
+    - name: Run the Action
+      uses: ./
+      continue-on-error: true
+
+    - name: Check for Expected Error
+      run: |
+        if ($LASTEXITCODE -eq 0) {
+          Write-Error "The action should have failed due to missing SARIF files."
+        } else {
+          Write-Host "Expected error due to missing SARIF files."
+        }
