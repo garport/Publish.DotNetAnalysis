@@ -10,8 +10,11 @@ jobs:
     steps:
     - name: Checkout Code
       uses: actions/checkout@v3
-
   
+    - name: Run PowerShell Script
+      shell: powershell
+      run: |
+        Get-ChildItem -Recursive
 
     - name: Run the Action
       uses: ./action.yml

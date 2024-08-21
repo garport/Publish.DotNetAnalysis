@@ -13,7 +13,7 @@ runs:
         GITHUB_ACTION_PATH: ${{ github.action_path }}
 
     - name: Run PowerShell Script
-      shell: PowerShell
+      shell: powershell
       run: |
         Get-ChildItem -Recursive
-        ./verify-code-analysis.ps1
+        ./${{ github.action_path }}/verify-code-analysis.ps1
