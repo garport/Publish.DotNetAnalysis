@@ -43,7 +43,7 @@ runs:
           });
 
     - name: Upload SARIF files
-      uses: github/codeql-action/upload-sarif@v2
+      uses: github/codeql-action/upload-sarif@v3
       if: ${{inputs.use-codeql}} == 'true'
       with:
         sarif_file: ${{ github.workspace }}/combined-code-analysis.sarif
