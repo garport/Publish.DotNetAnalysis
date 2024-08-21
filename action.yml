@@ -15,5 +15,5 @@ runs:
     - name: Run PowerShell Script
       shell: powershell
       run: |
-        Get-ChildItem -Recursive
+        Get-ChildItem ${{ github.action_path }} -Recurse 
         ./${{ github.action_path }}/verify-code-analysis.ps1
