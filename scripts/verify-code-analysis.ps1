@@ -22,36 +22,48 @@ if ($sarifFiles.Count -eq 0) {
     exit 1
 }
 
-# Initialize an empty array for runs
-$combinedRuns = @()
+# Combine all SARIF files into one
+$combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
+$combinedSarifContent = @()
 
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
-    $combinedRuns += $content.runs
+
+    # Check for SARIF version 1.0.0
+    if ($content.version -eq "1.0.0") {
+        foreach ($run in $content.runs) {
+            $combinedSarifContent += $run
+        }
+    } else {
+        # Assuming SARIF 2.0.0 or other structure
+        $combinedSarifContent += $content
+    }
 }
 
-# Create the combined SARIF structure
-$combinedSarifContent = @{
-    version = "2.1.0"
-    runs    = $combinedRuns
-}
+# Convert the combined SARIF content back to the correct structure
+$combinedSarifJson = @{
+    version = "1.0.0"
+    runs = $combinedSarifContent
+} | ConvertTo-Json -Depth 100
 
-# Convert to JSON
-$combinedSarifJson = $combinedSarifContent | ConvertTo-Json -Depth 100
-
-# Save the combined SARIF file
-$combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
 Set-Content -Path $combinedSarifFile -Value $combinedSarifJson
 
 # Generate a markdown report from the SARIF findings
 $findings = @()
-foreach ($result in $combinedRuns) {
-    foreach ($run in $result.results) {
-        $ruleId = $run.ruleId
-        $message = $run.message.text
-        $fileUri = $run.locations.physicalLocation.artifactLocation.uri
-        $startLine = $run.locations.physicalLocation.region.startLine
-        $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
+foreach ($sarifFile in $sarifFiles) {
+    $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
+
+    foreach ($run in $content.runs) {
+        foreach ($result in $run.results) {
+            $ruleId = $result.ruleId
+
+            # SARIF 1.0.0 structure differences
+            $message = if ($result.message) { $result.message.text } else { $result.message }
+            $fileUri = $result.locations.physicalLocation.artifactLocation.uri
+            $startLine = $result.locations.physicalLocation.region.startLine
+
+            $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
+        }
     }
 }
 

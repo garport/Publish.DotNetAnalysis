@@ -1,35 +1,30 @@
 {
-  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
-  "version": "2.1.0",
+  "version": "1.0.0",
   "runs": [
     {
       "tool": {
-        "driver": {
-          "name": "Dummy Code Analysis"
-        }
+        "name": "DummyAnalyzer",
+        "version": "1.0.0"
       },
       "results": [
         {
-          "ruleId": "CA2000",
-          "ruleIndex": 0,
-          "message": {
-            "text": "Dispose objects before losing scope."
-          },
+          "ruleId": "CA1001",
+          "message": "Type 'MyDisposableClass' implements IDisposable but does not dispose of resources.",
           "locations": [
             {
               "physicalLocation": {
                 "artifactLocation": {
-                  "uri": "test-resources/Program.cs"
+                  "uri": "Program.cs"
                 },
                 "region": {
-                  "startLine": 10
+                  "startLine": 15,
+                  "startColumn": 5,
+                  "endLine": 15,
+                  "endColumn": 40
                 }
               }
             }
-          ],
-          "partialFingerprints": {
-            "message": "Dispose objects before losing scope."
-          }
+          ]
         }
       ]
     }
