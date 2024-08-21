@@ -43,23 +43,17 @@ $combinedSarifJson = @{
 Set-Content -Path $combinedSarifFile -Value $combinedSarifJson
 
 # Generate a markdown report from the SARIF findings
-$repoUrl = "https://github.com/${env:GITHUB_REPOSITORY}"
 $findings = @()
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
     foreach ($result in $content.runs.results) {
         $ruleId = $result.ruleId
         $message = $result.message.text
-        $fileUri = $result.locations.physicalLocation.artifactLocation.uri
+        $fileUri = $result.locations.physicalLocation.artifactLocation.uri -replace "$env:GITHUB_WORKSPACE", ""
         $startLine = $result.locations.physicalLocation.region.startLine
 
-        # Format file URI to a GitHub URL
-        # Handle potential issues with file paths
-        $fileUri = $fileUri -replace [regex]::Escape($env:GITHUB_WORKSPACE + "\") , "" 
-        $fileUrl = "$repoUrl/blob/${env:GITHUB_REF}/$fileUri"
-        $link = "$fileUrl#L$startLine"
-
-        $findings += "| $ruleId | $message | [File]($link) | Line: $startLine |"
+        # Format the output as text with relative path and line number
+        $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
     }
 }
 
