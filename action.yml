@@ -17,3 +17,18 @@ runs:
       run: |
         # Get-ChildItem ${{ github.action_path }} -Recurse 
         ./verify-code-analysis.ps1
+        - name: Post Comment on PR using GitHub Script
+        
+    - uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const body = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/request-body.json`, 'utf8');
+          const issue_number = context.payload.pull_request.number;
+
+          github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: issue_number,
+            body: body
+          });

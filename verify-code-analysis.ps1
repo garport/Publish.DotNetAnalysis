@@ -51,9 +51,10 @@ $(($findings -join "`n"))
 $body = @{
     body = $report
 }
-$uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/issues/$env:GITHUB_PULL_REQUEST/comments"
-$headers = @{
-    Authorization = "Bearer $env:GITHUB_TOKEN"
-    Accept        = "application/vnd.github.v3+json"
-}
-$response = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body ($body | ConvertTo-Json)
+$body | ConvertTo-Json | Out-File -FilePath $env:GITHUB_WORKSPACE\request-body.json
+# $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/issues/$env:GITHUB_PULL_REQUEST/comments"
+# $headers = @{
+#     Authorization = "Bearer $env:GITHUB_TOKEN"
+#     Accept        = "application/vnd.github.v3+json"
+# }
+# $response = Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body ($body | ConvertTo-Json)
