@@ -17,9 +17,9 @@ runs:
       run: |
         # Get-ChildItem ${{ github.action_path }} -Recurse 
         ./verify-code-analysis.ps1
-        - name: Post Comment on PR using GitHub Script
-        
-    - uses: actions/github-script@v6
+
+    - name: Post Comment on PR using GitHub Script
+      uses: actions/github-script@v6
       with:
         script: |
           const fs = require('fs');
