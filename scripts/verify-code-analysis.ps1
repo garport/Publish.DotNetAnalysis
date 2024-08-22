@@ -18,12 +18,17 @@ if ($sarifFiles.Count -eq 0) {
     exit 1
 }
 
-# Combine all SARIF files into one
+# Combine all SARIF files into one, ignoring suppressed warnings
 $combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
 $combinedSarifContent = @()
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
-    $combinedSarifContent += $content.runs[0].results
+    foreach ($result in $content.runs[0].results) {
+        # Ignore results with suppressions
+        if (-not $result.suppressions) {
+            $combinedSarifContent += $result
+        }
+    }
 }
 
 $combinedSarifJson = [pscustomobject]@{
@@ -43,11 +48,14 @@ $findings = @()
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
     foreach ($result in $content.runs[0].results) {
-        $ruleId = $result.ruleId
-        $message = $result.message
-        $fileUri = $result.locations[0].resultfile.uri
-        $startLine = $result.locations[0].resultfile.region.startLine
-        $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
+        # Ignore results with suppressions
+        if (-not $result.suppressionStates) {
+         $ruleId = $result.ruleId
+         $message = $result.message
+         $fileUri = $result.locations[0].resultfile.uri
+         $startLine = $result.locations[0].resultfile.region.startLine
+         $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
+        }
     }
 }
 
