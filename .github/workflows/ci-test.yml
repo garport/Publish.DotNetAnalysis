@@ -18,7 +18,7 @@ jobs:
     - name: Run the Action (with SARIF files)
       with:
         # use-codeql: true
-        search-directory: ${{github.workspace}}
+        search-directory: .
       uses: ./
       
     - name: Run the Action (without SARIF files)

@@ -28,13 +28,13 @@ foreach ($sarifFile in $sarifFiles) {
 
 $combinedSarifJson = [pscustomobject]@{
     version = "1.0.0"
-    runs = @([pscustomobject]@{
-        tool = [pscustomobject]@{
-            name = "CombinedTool"
-            version = "1.0.0"
-        }
-        results = $combinedSarifContent
-    })
+    runs    = @([pscustomobject]@{
+            tool    = [pscustomobject]@{
+                name    = "CombinedTool"
+                version = "1.0.0"
+            }
+            results = $combinedSarifContent
+        })
 } | ConvertTo-Json -Depth 100
 Set-Content -Path $combinedSarifFile -Value $combinedSarifJson
 
@@ -43,11 +43,14 @@ $findings = @()
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
     foreach ($result in $content.runs[0].results) {
-        $ruleId = $result.ruleId
-        $message = $result.message
-        $fileUri = $result.locations[0].resultfile.uri
-        $startLine = $result.locations[0].resultfile.region.startLine
-        $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
+        # Ignore results with suppressions
+        if (-not $result.suppressionStates) {
+            $ruleId = $result.ruleId
+            $message = $result.message
+            $fileUri = $result.locations[0].resultfile.uri
+            $startLine = $result.locations[0].resultfile.region.startLine
+            $findings += "| $ruleId | $message | $fileUri | Line: $startLine |"
+        }
     }
 }
 
