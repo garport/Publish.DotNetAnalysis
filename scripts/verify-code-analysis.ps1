@@ -24,10 +24,7 @@ $combinedSarifContent = @()
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
     foreach ($result in $content.runs[0].results) {
-        # Ignore results with suppressions
-        if (-not $result.suppressionStates) {
-            $combinedSarifContent += $result
-        }
+        $combinedSarifContent += $content.runs[0].results
     }
 }
 
