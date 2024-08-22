@@ -9,14 +9,11 @@
       "results": [
         {
           "ruleId": "CA2000",
-          "message": 
-             "Dispose objects before losing scope."
-          ,
+          "message": "Dispose objects before losing scope.",
           "locations": [
             {
               "resultfile": {
-                  "uri": "Program.cs"
-                
+                "uri": "Program.cs",
                 "region": {
                   "startLine": 25,
                   "startColumn": 10
