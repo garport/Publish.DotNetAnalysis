@@ -18,7 +18,7 @@ if ($sarifFiles.Count -eq 0) {
     exit 1
 }
 
-# Combine all SARIF files into one, ignoring suppressed warnings
+# Combine all SARIF files into one
 $combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sarif"
 $combinedSarifContent = @()
 foreach ($sarifFile in $sarifFiles) {
