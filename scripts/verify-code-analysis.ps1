@@ -23,9 +23,7 @@ $combinedSarifFile = Join-Path $env:GITHUB_WORKSPACE "combined-code-analysis.sar
 $combinedSarifContent = @()
 foreach ($sarifFile in $sarifFiles) {
     $content = Get-Content $sarifFile.FullName -Raw | ConvertFrom-Json
-    foreach ($result in $content.runs[0].results) {
-        $combinedSarifContent += $content.runs[0].results
-    }
+    $combinedSarifContent += $content.runs[0].results
 }
 
 $combinedSarifJson = [pscustomobject]@{
